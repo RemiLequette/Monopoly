@@ -1,6 +1,8 @@
 module MonopolyProbability
 
-export BOARD_SIZE, standard_board, standard_board_us
+using Printf
+
+export BOARD_SIZE, standard_board, standard_board_us, board_square, print_board_square, board_probability_matrix, plot_board_heatmap
 
 const BOARD_SIZE = 40
 
@@ -29,5 +31,71 @@ function standard_board_us()
         "Short Line", "Chance", "Park Place", "Luxury Tax", "Boardwalk"
     ]
 end
+
+function _truncate_label(label::AbstractString, max_chars::Int)
+    chars = collect(label)
+    if length(chars) <= max_chars
+        return label
+    end
+    return String(chars[1:max_chars-1]) * "…"
+end
+
+function _board_positions()
+    positions = Tuple{Int, Int}[]
+
+    for col in 11:-1:1
+        push!(positions, (11, col))
+    end
+    for row in 10:-1:2
+        push!(positions, (row, 1))
+    end
+    for col in 1:11
+        push!(positions, (1, col))
+    end
+    for row in 2:11
+        push!(positions, (row, 11))
+    end
+
+    return positions
+end
+
+function board_square(probabilities::AbstractVector{<:Real}; labels::Vector{String}=standard_board(), label_chars::Int=10, digits::Int=2)
+    if length(probabilities) != BOARD_SIZE
+        throw(ArgumentError("Expected $(BOARD_SIZE) probabilities, got $(length(probabilities))."))
+    end
+    if length(labels) != BOARD_SIZE
+        throw(ArgumentError("Expected $(BOARD_SIZE) labels, got $(length(labels))."))
+    end
+
+    grid = fill("", 11, 11)
+    positions = _board_positions()
+
+    for idx in 1:BOARD_SIZE
+        row, col = positions[idx]
+        short_label = _truncate_label(labels[idx], label_chars)
+        pct = 100 * float(probabilities[idx])
+        grid[row, col] = string(short_label, "\n", @sprintf("%.*f%%", digits, pct))
+    end
+
+    grid[6, 6] = "MONOPOLY"
+    return grid
+end
+
+function print_board_square(probabilities::AbstractVector{<:Real}; labels::Vector{String}=standard_board(), label_chars::Int=10, digits::Int=2)
+    grid = board_square(probabilities; labels=labels, label_chars=label_chars, digits=digits)
+
+    for row in 1:size(grid, 1)
+        cells = String[]
+        for col in 1:size(grid, 2)
+            cell = replace(grid[row, col], "\n" => " | ")
+            push!(cells, rpad(cell, 24))
+        end
+        println(join(cells, " "))
+    end
+
+    return grid
+end
+
+include("Visualization.jl")
 
 end
