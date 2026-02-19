@@ -2,7 +2,7 @@ module MonopolyProbability
 
 using Printf
 
-export BOARD_SIZE, standard_board, standard_board_us, initial_probability_distribution, board_square, print_board_square, board_probability_matrix, plot_board_heatmap
+export BOARD_SIZE, standard_board, standard_board_us, initial_probability_distribution, dice_transition_matrix, update_probability_after_throw, simulate_n_throws, board_square, print_board_square
 
 const BOARD_SIZE = 40
 
@@ -14,6 +14,67 @@ function initial_probability_distribution(; start_square::Int=1)
     probabilities = zeros(Float64, BOARD_SIZE)
     probabilities[start_square] = 1.0
     return probabilities
+end
+
+function dice_transition_matrix(; board_size::Int=BOARD_SIZE)
+    if board_size <= 0
+        throw(ArgumentError("board_size must be > 0, got $(board_size)."))
+    end
+
+    transition = zeros(Float64, board_size, board_size)
+    roll_probabilities = (
+        2 => 1 / 36,
+        3 => 2 / 36,
+        4 => 3 / 36,
+        5 => 4 / 36,
+        6 => 5 / 36,
+        7 => 6 / 36,
+        8 => 5 / 36,
+        9 => 4 / 36,
+        10 => 3 / 36,
+        11 => 2 / 36,
+        12 => 1 / 36,
+    )
+
+    for from_square in 1:board_size
+        for (roll_sum, probability) in roll_probabilities
+            to_square = mod1(from_square + roll_sum, board_size)
+            transition[to_square, from_square] += probability
+        end
+    end
+
+    return transition
+end
+
+function update_probability_after_throw(
+    probabilities::AbstractVector{<:Real};
+    transition_matrix::AbstractMatrix{<:Real}=dice_transition_matrix(board_size=length(probabilities))
+)
+    if length(probabilities) != size(transition_matrix, 2)
+        throw(ArgumentError("Expected probabilities length $(size(transition_matrix, 2)), got $(length(probabilities))."))
+    end
+    if size(transition_matrix, 1) != size(transition_matrix, 2)
+        throw(ArgumentError("transition_matrix must be square, got $(size(transition_matrix))."))
+    end
+
+    return transition_matrix * Float64.(probabilities)
+end
+
+function simulate_n_throws(
+    probabilities::AbstractVector{<:Real},
+    n::Integer;
+    transition_matrix::AbstractMatrix{<:Real}=dice_transition_matrix(board_size=length(probabilities))
+)
+    if n < 0
+        throw(ArgumentError("n must be >= 0, got $(n)."))
+    end
+
+    updated = Float64.(probabilities)
+    for _ in 1:n
+        updated = update_probability_after_throw(updated; transition_matrix=transition_matrix)
+    end
+
+    return updated
 end
 
 function standard_board()

@@ -1,4 +1,10 @@
+module MonopolyVisualization
+
+using Printf
 using Plots
+import ..MonopolyProbability: BOARD_SIZE, standard_board
+
+export plot_board_heatmap
 
 function board_probability_matrix(probabilities::AbstractVector{<:Real})
     if length(probabilities) != BOARD_SIZE
@@ -75,6 +81,33 @@ end
 
 function _rect_shape(x0::Real, x1::Real, y0::Real, y1::Real)
     return Shape([x0, x1, x1, x0], [y0, y0, y1, y1])
+end
+
+function _truncate_label(label::AbstractString, max_chars::Int)
+    chars = collect(label)
+    if length(chars) <= max_chars
+        return label
+    end
+    return String(chars[1:max_chars-1]) * "…"
+end
+
+function _board_positions()
+    positions = Tuple{Int, Int}[]
+
+    for col in 11:-1:1
+        push!(positions, (11, col))
+    end
+    for row in 10:-1:2
+        push!(positions, (row, 1))
+    end
+    for col in 1:11
+        push!(positions, (1, col))
+    end
+    for row in 2:11
+        push!(positions, (row, 11))
+    end
+
+    return positions
 end
 
 function plot_board_heatmap(
@@ -155,7 +188,12 @@ function plot_board_heatmap(
             p,
             x0 + 0.5,
             y0 + (band_y0 - y0) * 0.5,
-            text(@sprintf("%.2f%%", probabilities_pct[idx]), 7, :black, :center)
+            text(
+                Printf.@sprintf("%.2f%%", probabilities_pct[idx]),
+                10,
+                intensity[idx] >= 55 ? :white : :black,
+                :center
+            )
         )
     end
 
@@ -188,10 +226,12 @@ function plot_board_heatmap(
     )
 
     annotate!(p, 5.5, -0.2, text("Probability color scale (min-max)", 10, :black, :center))
-    annotate!(p, legend_x0, legend_y0 - 0.12, text(@sprintf("%.2f%%", pmin), 9, :black, :left))
-    annotate!(p, (legend_x0 + legend_x1) / 2, legend_y0 - 0.12, text(@sprintf("%.2f%%", pmid), 9, :black, :center))
-    annotate!(p, legend_x1, legend_y0 - 0.12, text(@sprintf("%.2f%%", pmax), 9, :black, :right))
+    annotate!(p, legend_x0, legend_y0 - 0.12, text(Printf.@sprintf("%.2f%%", pmin), 9, :black, :left))
+    annotate!(p, (legend_x0 + legend_x1) / 2, legend_y0 - 0.12, text(Printf.@sprintf("%.2f%%", pmid), 9, :black, :center))
+    annotate!(p, legend_x1, legend_y0 - 0.12, text(Printf.@sprintf("%.2f%%", pmax), 9, :black, :right))
 
     annotate!(p, 5.5, 5.5, text("MONOPOLY", 20, :black, :center))
     return p
+end
+
 end
