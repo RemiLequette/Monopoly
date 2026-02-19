@@ -2,9 +2,19 @@ module MonopolyProbability
 
 using Printf
 
-export BOARD_SIZE, standard_board, standard_board_us, board_square, print_board_square, board_probability_matrix, plot_board_heatmap
+export BOARD_SIZE, standard_board, standard_board_us, initial_probability_distribution, board_square, print_board_square, board_probability_matrix, plot_board_heatmap
 
 const BOARD_SIZE = 40
+
+function initial_probability_distribution(; start_square::Int=1)
+    if !(1 <= start_square <= BOARD_SIZE)
+        throw(ArgumentError("start_square must be between 1 and $(BOARD_SIZE), got $(start_square)."))
+    end
+
+    probabilities = zeros(Float64, BOARD_SIZE)
+    probabilities[start_square] = 1.0
+    return probabilities
+end
 
 function standard_board()
     return [

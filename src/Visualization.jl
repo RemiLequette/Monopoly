@@ -53,7 +53,11 @@ function _traditional_square_color(idx::Int)
 end
 
 function _probability_intensity(probabilities_pct::AbstractVector{<:Real})
-    return clamp.(float.(probabilities_pct), 0.0, 100.0)
+    pmin, pmax = extrema(probabilities_pct)
+    if pmax ≈ pmin
+        return fill(0.0, length(probabilities_pct))
+    end
+    return 100 .* (probabilities_pct .- pmin) ./ (pmax - pmin)
 end
 
 function _is_light_hex_color(hex::AbstractString)
@@ -87,6 +91,8 @@ function plot_board_heatmap(
     end
 
     probabilities_pct = 100 .* float.(probabilities)
+    pmin, pmax = extrema(probabilities_pct)
+    pmid = (pmin + pmax) / 2
     intensity = _probability_intensity(probabilities_pct)
     gradient = cgrad(:YlOrRd)
     positions = _board_positions()
@@ -181,10 +187,10 @@ function plot_board_heatmap(
         linewidth=0.6
     )
 
-    annotate!(p, 5.5, -0.2, text("Probability color scale (0-100%)", 10, :black, :center))
-    annotate!(p, legend_x0, legend_y0 - 0.12, text("0%", 9, :black, :left))
-    annotate!(p, (legend_x0 + legend_x1) / 2, legend_y0 - 0.12, text("50%", 9, :black, :center))
-    annotate!(p, legend_x1, legend_y0 - 0.12, text("100%", 9, :black, :right))
+    annotate!(p, 5.5, -0.2, text("Probability color scale (min-max)", 10, :black, :center))
+    annotate!(p, legend_x0, legend_y0 - 0.12, text(@sprintf("%.2f%%", pmin), 9, :black, :left))
+    annotate!(p, (legend_x0 + legend_x1) / 2, legend_y0 - 0.12, text(@sprintf("%.2f%%", pmid), 9, :black, :center))
+    annotate!(p, legend_x1, legend_y0 - 0.12, text(@sprintf("%.2f%%", pmax), 9, :black, :right))
 
     annotate!(p, 5.5, 5.5, text("MONOPOLY", 20, :black, :center))
     return p
