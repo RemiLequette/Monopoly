@@ -106,6 +106,4 @@ function print_board_square(probabilities::AbstractVector{<:Real}; labels::Vecto
     return grid
 end
 
-include("Visualization.jl")
-
 end
