@@ -1,0 +1,184 @@
+[metadata]
+version = "1.0"
+edition = "Monopoly classique française (rues de Paris)"
+language = "fr"
+currency = "FRF"
+
+[[terrains]]
+group = "Marron"
+house_cost = 50
+
+[[terrains.properties]]
+name = "Boulevard de Belleville"
+purchase_price = 60
+rents = [2, 10, 30, 90, 160, 250]
+mortgage = 30
+
+[[terrains.properties]]
+name = "Rue de Courcelles"
+purchase_price = 60
+rents = [4, 20, 60, 180, 320, 450]
+mortgage = 30
+
+[[terrains]]
+group = "Bleu Clair"
+house_cost = 50
+
+[[terrains.properties]]
+name = "Rue de Vaugirard"
+purchase_price = 100
+rents = [6, 30, 90, 270, 400, 550]
+mortgage = 50
+
+[[terrains.properties]]
+name = "Rue de Courcelles"
+purchase_price = 100
+rents = [6, 30, 90, 270, 400, 550]
+mortgage = 50
+
+[[terrains.properties]]
+name = "Avenue de la République"
+purchase_price = 120
+rents = [8, 40, 100, 300, 450, 600]
+mortgage = 60
+
+[[terrains]]
+group = "Rose"
+house_cost = 100
+
+[[terrains.properties]]
+name = "Boulevard de la Villette"
+purchase_price = 140
+rents = [10, 50, 150, 450, 625, 750]
+mortgage = 70
+
+[[terrains.properties]]
+name = "Avenue de Neuilly"
+purchase_price = 140
+rents = [10, 50, 150, 450, 625, 750]
+mortgage = 70
+
+[[terrains.properties]]
+name = "Rue de Paradis"
+purchase_price = 160
+rents = [12, 60, 180, 500, 700, 900]
+mortgage = 80
+
+[[terrains]]
+group = "Orange"
+house_cost = 100
+
+[[terrains.properties]]
+name = "Avenue Mozart"
+purchase_price = 180
+rents = [14, 70, 200, 550, 750, 950]
+mortgage = 90
+
+[[terrains.properties]]
+name = "Boulevard Saint-Michel"
+purchase_price = 180
+rents = [14, 70, 200, 550, 750, 950]
+mortgage = 90
+
+[[terrains.properties]]
+name = "Place Pigalle"
+purchase_price = 200
+rents = [16, 80, 220, 600, 800, 1000]
+mortgage = 100
+
+[[terrains]]
+group = "Rouge"
+house_cost = 150
+
+[[terrains.properties]]
+name = "Avenue Matignon"
+purchase_price = 220
+rents = [18, 90, 250, 700, 875, 1050]
+mortgage = 110
+
+[[terrains.properties]]
+name = "Boulevard Malesherbes"
+purchase_price = 220
+rents = [18, 90, 250, 700, 875, 1050]
+mortgage = 110
+
+[[terrains.properties]]
+name = "Avenue Henri-Martin"
+purchase_price = 240
+rents = [20, 100, 300, 750, 925, 1100]
+mortgage = 120
+
+[[terrains]]
+group = "Jaune"
+house_cost = 150
+
+[[terrains.properties]]
+name = "Faubourg Saint-Honoré"
+purchase_price = 260
+rents = [22, 110, 330, 800, 975, 1150]
+mortgage = 130
+
+[[terrains.properties]]
+name = "Place de la Bourse"
+purchase_price = 260
+rents = [22, 110, 330, 800, 975, 1150]
+mortgage = 130
+
+[[terrains.properties]]
+name = "Rue de la Fayette"
+purchase_price = 280
+rents = [24, 120, 360, 850, 1025, 1200]
+mortgage = 140
+
+[[terrains]]
+group = "Vert"
+house_cost = 200
+
+[[terrains.properties]]
+name = "Avenue de Breteuil"
+purchase_price = 300
+rents = [26, 130, 390, 900, 1100, 1275]
+mortgage = 150
+
+[[terrains.properties]]
+name = "Avenue Foch"
+purchase_price = 300
+rents = [26, 130, 390, 900, 1100, 1275]
+mortgage = 150
+
+[[terrains.properties]]
+name = "Boulevard des Capucines"
+purchase_price = 320
+rents = [28, 150, 450, 1000, 1200, 1400]
+mortgage = 160
+
+[[terrains]]
+group = "Bleu Foncé"
+house_cost = 200
+
+[[terrains.properties]]
+name = "Avenue des Champs-Élysées"
+purchase_price = 350
+rents = [35, 175, 500, 1100, 1300, 1500]
+mortgage = 175
+
+[[terrains.properties]]
+name = "Rue de la Paix"
+purchase_price = 400
+rents = [50, 200, 600, 1400, 1700, 2000]
+mortgage = 200
+
+[gares]
+purchase_price = 200
+mortgage = 100
+rents = [25, 50, 100, 200]
+names = ["Gare du Nord", "Gare Saint-Lazare", "Gare de Lyon", "Gare Montparnasse"]
+
+[compagnies]
+purchase_price = 150
+mortgage = 75
+names = ["Compagnie des Eaux", "Compagnie d'Électricité"]
+
+[compagnies.rent_multipliers]
+one_owned = 4
+two_owned = 10

@@ -6,10 +6,12 @@ Compute Monopoly landing probabilities with a Julia Markov model and notebook wo
 
 - `Project.toml`: Julia project definition
 - `src/MonopolyProbability.jl`: Base module and board definition
+- `src/MonopolyInvestment.jl`: Investment module for property financial datasets (TOML)
 - `notebooks/monopoly_probability.ipynb`: Starter notebook
 - `docs/cards_transition_reference.md`: Documentation of the card rules file format
 - `docs/cards_transition_reference_fr.toml`: Machine-readable FR card rules used for transition generation
 - `docs/cards_transition_reference_us.toml`: Machine-readable US card rules used for transition generation
+- `docs/properties_cost_rent_fr.toml`: Machine-readable FR property financial data (purchase, rents, house cost, mortgage)
 
 ## Quick start
 
@@ -25,7 +27,33 @@ Compute Monopoly landing probabilities with a Julia Markov model and notebook wo
 - One-step and multi-step updates (`update_probability_after_throw`, `simulate_n_throws`)
 - Long-run convergent probabilities via power iteration (`convergent_probabilities`)
 - Rentability-oriented expected landing counts per full turn (`expected_landings_per_turn`)
+- French financial dataset loaders for ROI work (`MonopolyInvestment.load_property_financials_fr`, `MonopolyInvestment.property_financial_rows_fr`)
 - Probability reporting in notebook with board heatmap and ranked squares
+
+## Investment data rules (FR)
+
+The file `docs/properties_cost_rent_fr.toml` follows these conventions:
+
+- Streets (`[[terrains.properties]]`)
+  - `purchase_price`: bank purchase cost for the property.
+  - `rents`: `[base, 1_house, 2_houses, 3_houses, 4_houses, hotel]`.
+  - `mortgage`: mortgage value.
+  - `house_cost` is defined at the terrain-group level (`[[terrains]]`).
+- Railroads (`[gares]`)
+  - `purchase_price`: purchase cost for each railroad.
+  - `rents`: `[1_owned, 2_owned, 3_owned, 4_owned]`.
+  - `mortgage`: mortgage value.
+- Utilities (`[compagnies]`)
+  - `purchase_price`: purchase cost for each utility.
+  - Rent is computed from dice using multipliers in `rent_multipliers`:
+    - `one_owned` for one utility,
+    - `two_owned` for both utilities.
+  - `mortgage`: mortgage value.
+
+Notes:
+
+- Hotel cost is not stored as a separate field; by classic rules it is the same as `house_cost` for the group.
+- Monopoly "double base rent" (unimproved full set) is a game rule and should be applied by ROI logic, not pre-baked into `rents[1]`.
 
 ## Current movement model
 
