@@ -1,0 +1,181 @@
+[metadata]
+version = "1.0"
+edition = "Monopoly US classic (Atlantic City)"
+language = "en"
+
+[board]
+size = 40
+go_square = 1
+jail_square = 11
+go_to_jail_square = 31
+
+[chance]
+squares = [8, 23, 37]
+deck_size = 16
+
+[[chance.cards]]
+id = "chance_go"
+text = "Advance to GO."
+effect = "move_to"
+target = 1
+
+[[chance.cards]]
+id = "chance_illinois"
+text = "Advance to Illinois Avenue."
+effect = "move_to"
+target = 25
+
+[[chance.cards]]
+id = "chance_st_charles"
+text = "Advance to St. Charles Place."
+effect = "move_to"
+target = 12
+
+[[chance.cards]]
+id = "chance_nearest_utility"
+text = "Advance token to the nearest Utility."
+effect = "move_nearest_utility"
+
+[[chance.cards]]
+id = "chance_nearest_railroad"
+text = "Advance token to the nearest Railroad."
+effect = "move_nearest_railroad"
+weight = 2
+
+[[chance.cards]]
+id = "chance_bank_dividend"
+text = "Bank pays you dividend of $50."
+effect = "none"
+
+[[chance.cards]]
+id = "chance_get_out_of_jail"
+text = "Get Out of Jail Free."
+effect = "none"
+
+[[chance.cards]]
+id = "chance_go_back_3"
+text = "Go Back 3 Spaces."
+effect = "move_relative"
+steps = -3
+
+[[chance.cards]]
+id = "chance_go_to_jail"
+text = "Go to Jail."
+effect = "goto_jail"
+
+[[chance.cards]]
+id = "chance_general_repairs"
+text = "Make general repairs on all your property."
+effect = "none"
+
+[[chance.cards]]
+id = "chance_reading_railroad"
+text = "Take a trip to Reading Railroad."
+effect = "move_to"
+target = 6
+
+[[chance.cards]]
+id = "chance_boardwalk"
+text = "Advance to Boardwalk."
+effect = "move_to"
+target = 40
+
+[[chance.cards]]
+id = "chance_chairman"
+text = "You have been elected Chairman of the Board."
+effect = "none"
+
+[[chance.cards]]
+id = "chance_building_loan"
+text = "Your building and loan matures."
+effect = "none"
+
+[[chance.cards]]
+id = "chance_poor_tax"
+text = "Pay poor tax."
+effect = "none"
+
+[community]
+squares = [3, 18, 34]
+deck_size = 16
+
+[[community.cards]]
+id = "community_go"
+text = "Advance to GO."
+effect = "move_to"
+target = 1
+
+[[community.cards]]
+id = "community_bank_error"
+text = "Bank error in your favor."
+effect = "none"
+
+[[community.cards]]
+id = "community_doctors_fees"
+text = "Doctor's fees."
+effect = "none"
+
+[[community.cards]]
+id = "community_stock_sale"
+text = "From sale of stock you get $50."
+effect = "none"
+
+[[community.cards]]
+id = "community_get_out_of_jail"
+text = "Get Out of Jail Free."
+effect = "none"
+
+[[community.cards]]
+id = "community_go_to_jail"
+text = "Go to Jail."
+effect = "goto_jail"
+
+[[community.cards]]
+id = "community_holiday_fund"
+text = "Holiday Fund matures."
+effect = "none"
+
+[[community.cards]]
+id = "community_income_tax_refund"
+text = "Income tax refund."
+effect = "none"
+
+[[community.cards]]
+id = "community_birthday"
+text = "It is your birthday."
+effect = "none"
+
+[[community.cards]]
+id = "community_life_insurance"
+text = "Life insurance matures."
+effect = "none"
+
+[[community.cards]]
+id = "community_hospital_fees"
+text = "Hospital fees."
+effect = "none"
+
+[[community.cards]]
+id = "community_school_fees"
+text = "School fees."
+effect = "none"
+
+[[community.cards]]
+id = "community_consultancy_fee"
+text = "Receive consultancy fee."
+effect = "none"
+
+[[community.cards]]
+id = "community_street_repairs"
+text = "You are assessed for street repairs."
+effect = "none"
+
+[[community.cards]]
+id = "community_beauty_contest"
+text = "You have won second prize in a beauty contest."
+effect = "none"
+
+[[community.cards]]
+id = "community_inherit"
+text = "You inherit $100."
+effect = "none"

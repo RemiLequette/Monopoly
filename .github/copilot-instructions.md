@@ -22,3 +22,8 @@ These instructions apply to the entire repository.
 ## Documentation
 - When behavior changes, update `README.md` or inline usage examples if needed.
 - Keep documentation and comments in English.
+
+## Validation Preference
+- Do not run validations (tests, notebook execution, builds, or precompile checks) after every change by default.
+- Run validations only when the user explicitly asks, or at the end of a batch of changes if requested.
+- If a validation is considered critical before proceeding, ask the user first.

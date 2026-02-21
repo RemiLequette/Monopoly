@@ -1,0 +1,161 @@
+[metadata]
+version = "1.0"
+edition = "Monopoly classique française (rues de Paris)"
+language = "fr"
+
+[board]
+size = 40
+go_square = 1
+jail_square = 11
+go_to_jail_square = 31
+
+[chance]
+squares = [8, 23, 37]
+deck_size = 16
+
+[[chance.cards]]
+id = "chance_go"
+text = "Avancez jusqu’à la case départ. Touchez F20 000."
+effect = "move_to"
+target = 1
+
+[[chance.cards]]
+id = "chance_rue_paix"
+text = "Rendez-vous à la Rue de la Paix."
+effect = "move_to"
+target = 40
+
+[[chance.cards]]
+id = "chance_henri_martin"
+text = "Rendez-vous à l’Avenue Henri-Martin. Si vous passez par la case départ, recevez F20 000."
+effect = "move_to"
+target = 25
+
+[[chance.cards]]
+id = "chance_villette"
+text = "Avancez au Boulevard de La Villette. Si vous passez par la case départ, recevez F20 000."
+effect = "move_to"
+target = 12
+
+[[chance.cards]]
+id = "chance_gare_lyon"
+text = "Avancez jusqu’à la Gare de Lyon. Si vous passez par la case départ, recevez F20 000."
+effect = "move_to"
+target = 16
+
+[[chance.cards]]
+id = "chance_gare_plus_proche"
+text = "Rendez-vous à la gare la plus proche. Si vous passez par la case départ, recevez F20 000."
+effect = "move_nearest_railroad"
+
+[[chance.cards]]
+id = "chance_reculer_3"
+text = "Reculez de trois cases."
+effect = "move_relative"
+steps = -3
+
+[[chance.cards]]
+id = "chance_prison"
+text = "Aller en prison. Rendez-vous directement à la prison. Ne passez pas par la case départ, ne touchez pas F20 000."
+effect = "goto_jail"
+
+[[chance.cards]]
+id = "chance_sortie_prison"
+text = "Vous êtes libéré de prison. Cette carte peut être conservée jusqu’à ce qu’elle soit utilisée ou vendue."
+effect = "none"
+
+[[chance.cards]]
+id = "chance_reparations"
+text = "Vous êtes imposé pour les réparations de voirie à raison de F4 000 par maison et F11 500 par hôtel."
+effect = "none"
+
+[[chance.cards]]
+id = "chance_mots_croises"
+text = "Vous avez gagné le prix des mots croisés. Recevez F10 000."
+effect = "none"
+
+[[chance.cards]]
+id = "chance_dividende"
+text = "La banque vous verse un dividende de F5 000."
+effect = "none"
+
+[community]
+squares = [3, 18, 34]
+deck_size = 16
+
+[[community.cards]]
+id = "community_go"
+text = "Placez-vous sur la case départ. Touchez F20 000."
+effect = "move_to"
+target = 1
+
+[[community.cards]]
+id = "community_erreur_banque"
+text = "Erreur de la banque en votre faveur : recevez F20 000."
+effect = "none"
+
+[[community.cards]]
+id = "community_medecin"
+text = "Payez la note du médecin : F5 000."
+effect = "none"
+
+[[community.cards]]
+id = "community_stock"
+text = "La vente de votre stock vous rapporte F5 000."
+effect = "none"
+
+[[community.cards]]
+id = "community_sortie_prison"
+text = "Vous êtes libéré de prison. Cette carte peut être conservée jusqu’à ce qu’elle soit utilisée ou vendue."
+effect = "none"
+
+[[community.cards]]
+id = "community_prison"
+text = "Aller en prison. Rendez-vous directement à la prison. Ne passez pas par la case départ, ne touchez pas F20 000."
+effect = "goto_jail"
+
+[[community.cards]]
+id = "community_belleville"
+text = "Retournez à Belleville."
+effect = "move_to"
+target = 2
+
+[[community.cards]]
+id = "community_revenu_annuel"
+text = "Recevez votre revenu annuel : F10 000."
+effect = "none"
+
+[[community.cards]]
+id = "community_anniversaire"
+text = "C’est votre anniversaire. Chaque joueur doit vous donner F1 000."
+effect = "none"
+
+[[community.cards]]
+id = "community_contributions"
+text = "Les contributions vous remboursent la somme de F2 000."
+effect = "none"
+
+[[community.cards]]
+id = "community_interet_7"
+text = "Recevez votre intérêt sur l’emprunt à 7% : F2 500."
+effect = "none"
+
+[[community.cards]]
+id = "community_assurance"
+text = "Payez votre Police d’Assurance : F5 000."
+effect = "none"
+
+[[community.cards]]
+id = "community_amende_ou_chance"
+text = "Payez une amende de F1 000 ou bien tirez une carte « CHANCE »."
+effect = "draw_chance"
+
+[[community.cards]]
+id = "community_prix_beaute"
+text = "Vous avez gagné le deuxième Prix de Beauté. Recevez F1 000."
+effect = "none"
+
+[[community.cards]]
+id = "community_heritage"
+text = "Vous héritez F10 000."
+effect = "none"
