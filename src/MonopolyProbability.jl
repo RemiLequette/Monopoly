@@ -3,7 +3,7 @@ module MonopolyProbability
 using Printf
 using TOML
 
-export BOARD_SIZE, standard_board, standard_board_us, initial_probability_distribution, dice_transition_matrix, update_probability_after_throw, simulate_n_throws, convergent_probabilities, board_square, print_board_square
+export BOARD_SIZE, standard_board, standard_board_us, initial_probability_distribution, dice_transition_matrix, update_probability_after_throw, simulate_n_throws, convergent_probabilities, expected_landings_per_turn, board_square, print_board_square
 
 const BOARD_SIZE = 40
 const _CARD_RULES_CACHE = Dict{String, Dict{String, Any}}()
@@ -310,36 +310,59 @@ Behavior:
 Keyword arguments:
 - `board_size`: board size (default 40).
 - `include_cards`: enable/disable card effects.
+- `include_doubles`: when `true`, models extra rolls on doubles and the
+    third-consecutive-double rule (go to Jail).
 - `card_rules`: `:fr` or `:us` (selects default card reference file).
 - `card_rules_file`: optional custom TOML path overriding the default.
 """
-function dice_transition_matrix(; board_size::Int=BOARD_SIZE, include_cards::Bool=true, card_rules::Symbol=:fr, card_rules_file::Union{Nothing,AbstractString}=nothing)
+function dice_transition_matrix(; board_size::Int=BOARD_SIZE, include_cards::Bool=true, include_doubles::Bool=false, card_rules::Symbol=:fr, card_rules_file::Union{Nothing,AbstractString}=nothing)
     if board_size <= 0
         throw(ArgumentError("board_size must be > 0, got $(board_size)."))
     end
     _validate_card_rules(card_rules)
+    if include_doubles && board_size != BOARD_SIZE
+        throw(ArgumentError("include_doubles=true currently supports board_size=$(BOARD_SIZE), got $(board_size)."))
+    end
+
     cards_config = include_cards ? _load_card_rules_config(card_rules, card_rules_file) : nothing
 
     transition = zeros(Float64, board_size, board_size)
-    roll_probabilities = (
-        2 => 1 / 36,
-        3 => 2 / 36,
-        4 => 3 / 36,
-        5 => 4 / 36,
-        6 => 5 / 36,
-        7 => 6 / 36,
-        8 => 5 / 36,
-        9 => 4 / 36,
-        10 => 3 / 36,
-        11 => 2 / 36,
-        12 => 1 / 36,
-    )
 
-    for from_square in 1:board_size
-        for (roll_sum, probability) in roll_probabilities
-            landed_square = mod1(from_square + roll_sum, board_size)
-            resolved_distribution = _resolve_landing_distribution(landed_square, board_size; include_cards=include_cards, card_rules=card_rules, cards_config=cards_config)
-            transition[:, from_square] .+= probability .* resolved_distribution
+    if include_doubles
+        cache = Dict{Tuple{Int, Int}, Tuple{Vector{Float64}, Vector{Float64}}}()
+        for from_square in 1:board_size
+            end_distribution, _ = _turn_end_and_landings_with_doubles(
+                from_square,
+                0,
+                board_size;
+                include_cards=include_cards,
+                card_rules=card_rules,
+                cards_config=cards_config,
+                cache=cache,
+            )
+            transition[:, from_square] .= end_distribution
+        end
+    else
+        roll_probabilities = (
+            2 => 1 / 36,
+            3 => 2 / 36,
+            4 => 3 / 36,
+            5 => 4 / 36,
+            6 => 5 / 36,
+            7 => 6 / 36,
+            8 => 5 / 36,
+            9 => 4 / 36,
+            10 => 3 / 36,
+            11 => 2 / 36,
+            12 => 1 / 36,
+        )
+
+        for from_square in 1:board_size
+            for (roll_sum, probability) in roll_probabilities
+                landed_square = mod1(from_square + roll_sum, board_size)
+                resolved_distribution = _resolve_landing_distribution(landed_square, board_size; include_cards=include_cards, card_rules=card_rules, cards_config=cards_config)
+                transition[:, from_square] .+= probability .* resolved_distribution
+            end
         end
     end
 
@@ -419,5 +442,6 @@ end
 
 
 include("convergent_probabilities.jl")
+include("doubles_turn_model.jl")
 
 end
