@@ -3,7 +3,7 @@ module MonopolyProbability
 using Printf
 using TOML
 
-export BOARD_SIZE, standard_board, standard_board_us, initial_probability_distribution, dice_transition_matrix, update_probability_after_throw, simulate_n_throws, convergent_probabilities, expected_landings_per_turn, board_square, print_board_square
+export BOARD_SIZE, standard_board, standard_board_us, initial_probability_distribution, dice_transition_matrix, dice_transition_matrix_with_jail_state, expand_turn_start_distribution, collapse_turn_state_distribution, update_probability_after_throw, simulate_n_throws, convergent_probabilities, expected_landings_per_turn, board_square, print_board_square
 
 const BOARD_SIZE = 40
 const _CARD_RULES_CACHE = Dict{String, Dict{String, Any}}()
@@ -38,6 +38,15 @@ Validate that `card_rules` is one of the supported rule sets (`:fr`, `:us`).
 function _validate_card_rules(card_rules::Symbol)
     if card_rules ∉ (:fr, :us)
         throw(ArgumentError("card_rules must be :fr or :us, got $(card_rules)."))
+    end
+end
+
+"""
+Validate that `jail_policy` is one of the supported strategies.
+"""
+function _validate_jail_policy(jail_policy::Symbol)
+    if jail_policy ∉ (:pay_immediately, :try_doubles_then_pay)
+        throw(ArgumentError("jail_policy must be :pay_immediately or :try_doubles_then_pay, got $(jail_policy)."))
     end
 end
 
@@ -312,16 +321,24 @@ Keyword arguments:
 - `include_cards`: enable/disable card effects.
 - `include_doubles`: when `true`, models extra rolls on doubles and the
     third-consecutive-double rule (go to Jail).
+- `jail_policy`: jail strategy used when `include_doubles=true`.
+        - `:pay_immediately` (default): supported in square-only model.
+        - `:try_doubles_then_pay`: requires explicit jail state and is available through
+            `dice_transition_matrix_with_jail_state`.
 - `card_rules`: `:fr` or `:us` (selects default card reference file).
 - `card_rules_file`: optional custom TOML path overriding the default.
 """
-function dice_transition_matrix(; board_size::Int=BOARD_SIZE, include_cards::Bool=true, include_doubles::Bool=false, card_rules::Symbol=:fr, card_rules_file::Union{Nothing,AbstractString}=nothing)
+function dice_transition_matrix(; board_size::Int=BOARD_SIZE, include_cards::Bool=true, include_doubles::Bool=false, jail_policy::Symbol=:pay_immediately, card_rules::Symbol=:fr, card_rules_file::Union{Nothing,AbstractString}=nothing)
     if board_size <= 0
         throw(ArgumentError("board_size must be > 0, got $(board_size)."))
     end
     _validate_card_rules(card_rules)
+    _validate_jail_policy(jail_policy)
     if include_doubles && board_size != BOARD_SIZE
         throw(ArgumentError("include_doubles=true currently supports board_size=$(BOARD_SIZE), got $(board_size)."))
+    end
+    if include_doubles && jail_policy == :try_doubles_then_pay
+        throw(ArgumentError("jail_policy=:try_doubles_then_pay cannot be represented exactly on square-only states because square 11 mixes 'Just Visiting' and 'In Jail'. Use dice_transition_matrix_with_jail_state(...) and collapse_turn_state_distribution(...) for accurate results."))
     end
 
     cards_config = include_cards ? _load_card_rules_config(card_rules, card_rules_file) : nothing
@@ -329,18 +346,20 @@ function dice_transition_matrix(; board_size::Int=BOARD_SIZE, include_cards::Boo
     transition = zeros(Float64, board_size, board_size)
 
     if include_doubles
-        cache = Dict{Tuple{Int, Int}, Tuple{Vector{Float64}, Vector{Float64}}}()
+        cache = Dict{Tuple{Int, Int, Bool}, Tuple{Vector{Float64}, Vector{Float64}}}()
         for from_square in 1:board_size
             end_distribution, _ = _turn_end_and_landings_with_doubles(
                 from_square,
                 0,
+                false,
                 board_size;
                 include_cards=include_cards,
+                jail_policy=jail_policy,
                 card_rules=card_rules,
                 cards_config=cards_config,
                 cache=cache,
             )
-            transition[:, from_square] .= end_distribution
+            transition[:, from_square] .= end_distribution[1:board_size] .+ end_distribution[(board_size + 1):(2 * board_size)]
         end
     else
         roll_probabilities = (

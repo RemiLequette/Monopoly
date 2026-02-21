@@ -35,6 +35,7 @@ Compute Monopoly landing probabilities with a Julia Markov model and notebook wo
 - Supported card effects: move to square, go to jail, nearest railroad, nearest utility, relative move (e.g., back 3), draw-chained effects
 - Weighted deck modeling with deck-size normalization and remaining “no movement” mass
 - Optional doubles rule with in-turn state `(square, doubles_count)` and third-consecutive-double jail rule
+- Configurable jail strategy in doubles-aware mode with explicit jail-state support
 
 ### Card rule sets
 
@@ -67,7 +68,25 @@ To approximate rentability (how often opponents can land on payable squares), th
 APIs:
 
 - `dice_transition_matrix(; include_doubles=true, ...)`: turn-boundary transition matrix including doubles behavior.
-- `expected_landings_per_turn(start_probabilities; include_doubles=true, ...)`: expected number of landings on each square during one full turn (including extra rolls from doubles).
+- `dice_transition_matrix(; include_doubles=true, jail_policy=:pay_immediately, ...)`: 40x40 turn-boundary transition matrix on square-only states.
+- `dice_transition_matrix_with_jail_state(; include_doubles=true, jail_policy=:try_doubles_then_pay, ...)`: 80x80 transition matrix on expanded `(square, in_jail)` states.
+- `expand_turn_start_distribution(square_probabilities; jail_probability_at_11=...)`: lift a 40-square distribution into expanded state space.
+- `collapse_turn_state_distribution(expanded_probabilities)`: project expanded distribution back to 40 squares.
+- `expected_landings_per_turn(start_probabilities; include_doubles=true, jail_policy=:pay_immediately, ...)`: expected number of landings on each square during one full turn (including extra rolls from doubles). Supports expanded start distributions (length 80) when modeling explicit jail state.
+
+Supported jail strategies:
+
+- `:pay_immediately` (default): when starting from Jail, movement follows regular doubles-aware turn logic.
+- `:try_doubles_then_pay`: when starting from Jail, a non-double keeps the player in Jail for turn end; a double leaves Jail, moves, and ends the turn.
+
+Important modeling note:
+
+- The 40-square state cannot distinguish `Jail` vs `Just Visiting` on square 11.
+- Therefore `dice_transition_matrix(..., jail_policy=:try_doubles_then_pay)` is intentionally rejected.
+- Use expanded-state workflow for this policy:
+  1. Build `T80 = dice_transition_matrix_with_jail_state(jail_policy=:try_doubles_then_pay, ...)`
+  2. Compute stationary expanded state with `convergent_probabilities(T80)`
+  3. Collapse to 40 squares using `collapse_turn_state_distribution(...)`
 
 Recommended workflow for rentability:
 

@@ -24,7 +24,9 @@ function convergent_probabilities(
 
     n = size(transition_matrix, 1)
     p = if initial === nothing
-        initial_probability_distribution(start_square=1)
+        p0 = zeros(Float64, n)
+        p0[1] = 1.0
+        p0
     else
         if length(initial) != n
             throw(ArgumentError("Expected initial length $(n), got $(length(initial))."))
